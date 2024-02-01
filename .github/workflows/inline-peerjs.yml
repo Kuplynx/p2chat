@@ -10,47 +10,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Inline Script
-      run: |
-        # Extract script URL from HTML file
-        script_url=$(grep -oP '(?<=<script src=")[^"]+' p2chat.v1.html)
+      - name: Inline Script
+        run: |
+          # Extract script URL from HTML file
+          script_url=$(grep -oP '(?<=<script src=")[^"]+' index.html)
 
-        # Download the script content
-        script_content=$(curl -s "$script_url")
+          # Download the script content
+          script_content=$(curl -s "$script_url")
 
-        # Inline the script in the HTML file
-        sed -i "s|<script src=\"$script_url\"></script>|<script>$script_content</script>|g" p2chat.v1.html
+          # Escape slashes in the script content
+          escaped_script_content=$(echo "$script_content" | sed 's/\//\\\//g')
 
-    - name: Commit Changes
-      run: |
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git add p2chat.v1.html
-        git commit -m "Inline script in HTML file"
+          # Inline the script in the HTML file using a different delimiter
+          sed -i "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" index.html
 
-    - name: Push Changes
-      uses: ad-m/github-push-action@v0.8.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit Changes
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add p2chat.v1.html
+          git commit -m "Inline script in HTML file"
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ github.sha }}
-        release_name: Release ${{ github.sha }}
-        draft: false
-        prerelease: false
+      - name: Push Changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./p2chat.v1.html
-        asset_name: p2chat.v1.html
-        asset_content_type: text/html
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.sha }}
+          release_name: Release ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./p2chat.v1.html
+          asset_name: p2chat.v1.html
+          asset_content_type: text/html
+          github_token: ${{ secrets.GITHUB_TOKEN }}
