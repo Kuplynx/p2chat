@@ -16,19 +16,19 @@ jobs:
     - name: Inline Script
       run: |
         # Extract script URL from HTML file
-        script_url=$(grep -oP '(?<=<script src=")[^"]+' p2pchat.v1.html)
+        script_url=$(grep -oP '(?<=<script src=")[^"]+' p2chat.v1.html)
 
         # Download the script content
         script_content=$(curl -s "$script_url")
 
         # Inline the script in the HTML file
-        sed -i "s|<script src=\"$script_url\"></script>|<script>$script_content</script>|g" p2pchat.v1.html
+        sed -i "s|<script src=\"$script_url\"></script>|<script>$script_content</script>|g" p2chat.v1.html
 
     - name: Commit Changes
       run: |
         git config user.name "${{ github.actor }}"
         git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git add p2pchat.v1.html
+        git add p2chat.v1.html
         git commit -m "Inline script in HTML file"
 
     - name: Push Changes
@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./p2pchat.v1.html
-        asset_name: p2pchat.v1.html
+        asset_path: ./p2chat.v1.html
+        asset_name: p2chat.v1.html
         asset_content_type: text/html
         github_token: ${{ secrets.GITHUB_TOKEN }}
