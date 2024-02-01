@@ -16,7 +16,7 @@ jobs:
       - name: Inline Script
         run: |
           # Extract script URL from HTML file
-          script_url=$(grep -oP '(?<=<script src=")[^"]+' index.html)
+          script_url=$(grep -oP '(?<=<script src=")[^"]+' p2chat.html)
 
           # Download the script content
           script_content=$(curl -s "$script_url")
@@ -25,7 +25,7 @@ jobs:
           escaped_script_content=$(echo "$script_content" | sed 's/\//\\\//g')
 
           # Inline the script in the HTML file using a different delimiter
-          sed -i "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" index.html
+          sed -i "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" p2chat.html
 
       - name: Commit Changes
         run: |
