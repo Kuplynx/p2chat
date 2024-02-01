@@ -21,7 +21,7 @@ jobs:
         # Download the script content
         script_content=$(curl -s "$script_url")
 
-       escaped_script_content=$(echo "$script_content" | sed 's/[\/&]/\\&/g')
+        escaped_script_content=$(echo "$script_content" | sed 's/[\/&]/\\&/g')
         sed -i "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" p2chat.v1.html
 
     - name: Commit Changes
