@@ -21,8 +21,8 @@ jobs:
         # Download the script content
         script_content=$(curl -s "$script_url")
 
-        # Inline the script in the HTML file
-        sed -i "s|<script src=\"$script_url\"></script>|<script>$script_content</script>|g" p2chat.v1.html
+       escaped_script_content=$(echo "$script_content" | sed 's/[\/&]/\\&/g')
+        sed -i "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" p2chat.v1.html
 
     - name: Commit Changes
       run: |
