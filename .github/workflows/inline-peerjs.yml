@@ -16,7 +16,7 @@ jobs:
     - name: Inline Script
       run: |
         # Extract script URL from HTML file
-        script_url=$(grep -oP '(?<=<script src=")[^"]+' index.html)
+        script_url=$(grep -oP '(?<=<script src=")[^"]+' p2chat.v1.html)
         echo "Script URL: $script_url"
 
         # Download the script content
@@ -28,7 +28,7 @@ jobs:
         echo "Escaped Script Content: $escaped_script_content"
 
         # Inline the script in the HTML file using perl
-        perl -0777 -pi -e "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" index.html
+        perl -0777 -pi -e "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" p2chat.v1.html
 
 
 
