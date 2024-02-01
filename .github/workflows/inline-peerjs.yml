@@ -16,14 +16,20 @@ jobs:
     - name: Inline Script
       run: |
         # Extract script URL from HTML file
-        script_url=$(grep -oP '(?<=<script src=")[^"]+' p2chat.v1.html)
+        script_url=$(grep -oP '(?<=<script src=")[^"]+' index.html)
+        echo "Script URL: $script_url"
 
         # Download the script content
         script_content=$(curl -s "$script_url")
+        echo "Script Content: $script_content"
 
-        # Inline the script in the HTML file using awk
-        awk -v script="$script_content" '{gsub(/<script src="'"$script_url"'"><\/script>/, "<script>" script "<\/script>")}1' p2chat.v1.html > index_temp.html
-        mv index_temp.html p2chat.v1.html
+        # Escape slashes and ampersands in the script content
+        escaped_script_content=$(echo "$script_content" | perl -pe 's/([\/&])/\\$1/g')
+        echo "Escaped Script Content: $escaped_script_content"
+
+        # Inline the script in the HTML file using perl
+        perl -0777 -pi -e "s|<script src=\"$script_url\"></script>|<script>$escaped_script_content</script>|g" index.html
+
 
 
 
